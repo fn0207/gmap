@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+<script>
+    	    jQuery(function($){
+    		var jsonURL = 'http://tk2-260-39992.vs.sakura.ne.jp:8081/api/v0/fields/vertexes?callback=hoge';
+		$.ajax({
+        			url: jsonURL,
+        			type: 'GET',
+        			dataType: 'jsonp',
+    				})
+		.done(function(data){
+			var result=data.data;
+            var latitude = new Array(4);
+            var longitude = new Array(4);
+            var points = new Array(8);
+            var polygon = new Array(8);
+            if (GBrowserIsCompatible()) {
+                var map = new GMap2(document.getElementById("map_canvas"));
+                map.setCenter(new GLatLng(35.498791,133.028341), 16);
+            }            
+            for(var j=0; j<result.fields.length ; j++){
+                var hage=result.fields[j];
+                for(var i=0; i<hage.vertexes.length ; i++){
+                    value=hage.vertexes[i];
+                    latitude[i]=value.latitude;
+    		        longitude[i] = value.longitude;  
+                }
+            
+                    points[j] = [
+                        new GLatLng(latitude[0],longitude[0]),
+                        new GLatLng(latitude[1],longitude[1]),
+                        new GLatLng(latitude[2],longitude[2]),
+                        new GLatLng(latitude[3],longitude[3]),
+                        new GLatLng(latitude[0],longitude[0]),
+                    ]; 
+
+                polygon[j] = new GPolygon(points[j]);
+                map.addOverlay(polygon[j]);
+            }	
+		});
+	});
+</script>
+    <script src="http://maps.google.com/maps?file=api&v=2&key=AIzaSyCZ5VpJILIlKD1-4QVys2n-8tMocOV2XU4&sensor=false"
+            type="text/javascript" charset="utf-8"></script>
+  </head>
+    <body>    
+    <div id="map_canvas" style="width: 400px; height: 400px"></div>
+  </body>
+</html>
